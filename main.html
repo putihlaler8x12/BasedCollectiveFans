@@ -670,3 +670,115 @@
         <h3 class="section-title">Can I create listings or place offers from this page?</h3>
         <p style="color: var(--textMuted); font-size: 0.9rem;">This interface supports viewing creators, collectibles, listings, and offers, plus registering creators and following via the Actions panel. For creating listings, placing offers, filling, or cancelling, use the Unite CLI (e.g. <code>python Unite.py create-listing ...</code>) or interact with the SiamsoProtocol contract directly.</p>
       </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">What is SiamsoProtocol?</h3>
+        <p style="color: var(--textMuted); font-size: 0.9rem;">SiamsoProtocol is an EVM contract for a content-creator and collectible fan site and exchange: creators register, mint collectibles, set royalties and allowlists; fans follow creators and trade collectibles via an on-chain listing and offer book with protocol fees.</p>
+      </div>
+      <div class="detail-view mt-1">
+      <h3 class="section-title">Query parameters</h3>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">You can pass <code>?api=http://127.0.0.1:8765</code> to set the API base URL, and <code>?tab=collectibles</code> to open a specific tab (creators, collectibles, listings, offers, actions).</p>
+      </div>
+
+      <h2 style="margin-top: 2.5rem;">Mint collectible (POST)</h2>
+      <p style="color: var(--textMuted); margin-bottom: 1rem;">If your Unite API supports POST /api/mint, you can mint a new collectible here. Otherwise use the Unite CLI.</p>
+      <div class="form-row">
+        <label for="mint-creator-id">Creator ID</label>
+        <input type="text" id="mint-creator-id" placeholder="creator_1">
+      </div>
+      <div class="form-row">
+        <label for="mint-account">Creator account (address)</label>
+        <input type="text" id="mint-account" placeholder="0x...">
+      </div>
+      <div class="form-row">
+        <label for="mint-to">Mint to (address)</label>
+        <input type="text" id="mint-to" placeholder="0x...">
+      </div>
+      <div class="form-row">
+        <label for="mint-supply-cap">Supply cap</label>
+        <input type="number" id="mint-supply-cap" placeholder="1" value="1" min="1">
+      </div>
+      <button type="button" class="btn btn-secondary" id="btn-mint">Mint collectible</button>
+      <div id="mint-message"></div>
+
+      <h2 style="margin-top: 2.5rem;">Unite CLI reference</h2>
+      <p style="color: var(--textMuted); margin-bottom: 0.75rem;">Commands you can run with <code>python Unite.py</code>:</p>
+      <ul style="color: var(--textMuted); margin-left: 1.5rem; font-size: 0.9rem; line-height: 1.8;">
+        <li><code>register-creator --account 0x... --handle my_handle</code> — Register as creator.</li>
+        <li><code>mint --creator-id creator_1 --account 0x... --to 0x... --supply-cap 100</code> — Mint collectible.</li>
+        <li><code>follow --creator-id creator_1 --fan 0x...</code> — Follow a creator.</li>
+        <li><code>list-creators</code>, <code>list-collectibles</code>, <code>list-listings</code>, <code>list-offers</code> — List data.</li>
+        <li><code>create-listing --collectible-id col_1 --seller 0x... --amount 1 --price-wei 1000000</code> — Create sell listing.</li>
+        <li><code>place-offer --collectible-id col_1 --bidder 0x... --amount 1 --price-wei 1000000</code> — Place buy offer.</li>
+        <li><code>serve --port 8765</code> — Start API server for this web UI.</li>
+        <li><code>stats</code>, <code>export</code>, <code>import</code>, <code>creator-stats</code>, <code>collectible-stats</code> — Utilities.</li>
+      </ul>
+
+      <h2 style="margin-top: 2.5rem;">Data schema (Unite API)</h2>
+      <p style="color: var(--textMuted); margin-bottom: 0.75rem;">Response shapes used by this UI:</p>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">GET /api/stats</h3>
+        <pre style="font-size: 0.8rem; color: var(--textMuted); overflow-x: auto;">{ "creators": number, "collectibles": number, "listings": number, "offers": number, "fan_follows": number }</pre>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">GET /api/creators</h3>
+        <pre style="font-size: 0.8rem; color: var(--textMuted); overflow-x: auto;">{ "creators": [{ "creator_id", "handle", "account", "active", "registered_at", "follower_count" }], "count": number }</pre>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">GET /api/collectibles</h3>
+        <pre style="font-size: 0.8rem; color: var(--textMuted); overflow-x: auto;">{ "collectibles": [{ "collectible_id", "creator_id", "content_hash", "supply_cap", "total_minted", "frozen" }], "count": number }</pre>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">GET /api/listings</h3>
+        <pre style="font-size: 0.8rem; color: var(--textMuted); overflow-x: auto;">{ "listings": [{ "listing_id", "collectible_id", "seller", "amount", "price_wei", "expires_at" }], "count": number }</pre>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">GET /api/offers</h3>
+        <pre style="font-size: 0.8rem; color: var(--textMuted); overflow-x: auto;">{ "offers": [{ "offer_id", "collectible_id", "bidder", "amount", "price_wei", "expires_at" }], "count": number }</pre>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">POST /api/register-creator</h3>
+        <pre style="font-size: 0.8rem; color: var(--textMuted); overflow-x: auto;">Body: { "account": string, "handle": string, "content_root"?: string }</pre>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">POST /api/follow</h3>
+        <pre style="font-size: 0.8rem; color: var(--textMuted); overflow-x: auto;">Body: { "creator_id": string, "fan": string }</pre>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">POST /api/mint</h3>
+        <pre style="font-size: 0.8rem; color: var(--textMuted); overflow-x: auto;">Body: { "creator_id", "account", "to", "supply_cap"?, "content_hash"?: string }</pre>
+      </div>
+
+      <h2 style="margin-top: 2.5rem;">SiamsoProtocol contract overview</h2>
+      <p style="color: var(--textMuted); margin-bottom: 1rem;">The on-chain contract (EVM) provides:</p>
+      <ul style="color: var(--textMuted); margin-left: 1.5rem; margin-bottom: 1rem; line-height: 1.8;">
+        <li><strong>Roles:</strong> Curator (admin), Steward (fee/config), Guardian (pause). Addresses are set at deploy; no constructor args required.</li>
+        <li><strong>Creators:</strong> Register with content root and handle; update content root; can be deactivated by curator.</li>
+        <li><strong>Collectibles:</strong> Minted by creators with supply cap; transferable; optional royalty (bps) and allowlist per collectible.</li>
+        <li><strong>Fan follows:</strong> Any address can follow/unfollow a creator (on-chain or via indexer).</li>
+        <li><strong>Listings:</strong> Sellers list collectible amount at price in wei; buyers fill with ETH; protocol fee and optional royalty deducted.</li>
+        <li><strong>Offers:</strong> Bidders lock ETH for amount at price; sellers accept and receive ETH minus fee/royalty.</li>
+        <li><strong>Safety:</strong> Reentrancy guard, pause by guardian, fee/royalty caps, EIP-55 addresses, immutable role addresses.</li>
+      </ul>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">Unite mirrors this logic in local state and REST API for development and testing; production flows can use the contract directly.</p>
+
+      <h2 style="margin-top: 2.5rem;">Glossary</h2>
+      <dl style="color: var(--textMuted); font-size: 0.9rem; margin-left: 0.5rem;">
+        <dt style="margin-top: 0.75rem; color: var(--text);"><strong>Creator</strong></dt>
+        <dd>An address that has registered with a handle and content root; can mint collectibles and set royalties/allowlists.</dd>
+        <dt style="margin-top: 0.75rem; color: var(--text);"><strong>Collectible</strong></dt>
+        <dd>A tokenized item bound to a creator, with supply cap and optional royalty; fungible by amount (balance per address).</dd>
+        <dt style="margin-top: 0.75rem; color: var(--text);"><strong>Listing</strong></dt>
+        <dd>A sell order: seller offers amount of a collectible at a price in wei; buyer fills with ETH.</dd>
+        <dt style="margin-top: 0.75rem; color: var(--text);"><strong>Offer</strong></dt>
+        <dd>A buy order: bidder locks ETH for amount at price; seller accepts and receives ETH, bidder receives collectible.</dd>
+        <dt style="margin-top: 0.75rem; color: var(--text);"><strong>Fan follow</strong></dt>
+        <dd>An address following a creator (stored on-chain or in Unite state); used for discovery and gating.</dd>
+        <dt style="margin-top: 0.75rem; color: var(--text);"><strong>Unite</strong></dt>
+        <dd>Single-file Python app: local state, CLI, and REST API for SiamsoProtocol; companion to this web UI.</dd>
+        <dt style="margin-top: 0.75rem; color: var(--text);"><strong>BasedCollectiveFans</strong></dt>
+        <dd>This web interface: view creators, collectibles, listings, offers; register creators and follow via API.</dd>
+      </dl>
+
+      <h2 style="margin-top: 2.5rem;">Step-by-step: Connect Unite and view data</h2>
+      <ol style="color: var(--textMuted); margin-left: 1.5rem; line-height: 1.9;">
+        <li>Install Python 3 if needed. Download or clone the project that contains <code>Unite.py</code>.</li>
