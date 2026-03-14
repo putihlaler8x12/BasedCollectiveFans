@@ -1342,3 +1342,109 @@
         const rows = allCreatorsCache.map(c => [c.creator_id, c.handle || '', c.account || '', c.active ? '1' : '0', (c.follower_count != null ? c.follower_count : '')].map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(','));
         const csv = [headers.join(','), ...rows].join('\n');
         const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'basedcollectivefans_creators.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+
+      function exportCollectiblesCsv() {
+        if (!allCollectiblesCache.length) return;
+        const headers = ['collectible_id', 'creator_id', 'supply_cap', 'total_minted', 'frozen'];
+        const rows = allCollectiblesCache.map(c => [c.collectible_id, c.creator_id || '', c.supply_cap, c.total_minted, c.frozen ? '1' : '0'].map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'basedcollectivefans_collectibles.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+
+      function updateApiStatusIndicator() {
+        const statusEl = document.getElementById('api-status-indicator');
+        if (!statusEl) return;
+        isApiReachable().then(ok => {
+          statusEl.className = 'status-dot ' + (ok ? 'online' : 'offline');
+          statusEl.title = ok ? 'API reachable' : 'API not reachable';
+        }).catch(() => {
+          statusEl.className = 'status-dot unknown';
+          statusEl.title = 'Unknown';
+        });
+      }
+
+      setInterval(updateApiStatusIndicator, 30000);
+
+      function getCreatorsForExport() { return allCreatorsCache; }
+      function getCollectiblesForExport() { return allCollectiblesCache; }
+      function getCurrentApiBase() { return apiBase; }
+      function getCreatorsPage() { return creatorsPage; }
+      function getCollectiblesPage() { return collectiblesPage; }
+      function setCreatorsPage(p) { creatorsPage = Math.max(0, p); loadCreators(); }
+      function setCollectiblesPage(p) { collectiblesPage = Math.max(0, p); loadCollectibles(); }
+
+      function sortCreatorsByHandle(creators) {
+        return (creators || []).slice().sort((a, b) => (a.handle || '').localeCompare(b.handle || ''));
+      }
+      function sortCreatorsByFollowers(creators) {
+        return (creators || []).slice().sort((a, b) => (b.follower_count || 0) - (a.follower_count || 0));
+      }
+      function sortCollectiblesByMinted(collectibles) {
+        return (collectibles || []).slice().sort((a, b) => (b.total_minted || 0) - (a.total_minted || 0));
+      }
+      function sortListingsByPrice(listings) {
+        return (listings || []).slice().sort((a, b) => (b.price_wei || 0) - (a.price_wei || 0));
+      }
+      function sortOffersByPrice(offers) {
+        return (offers || []).slice().sort((a, b) => (b.price_wei || 0) - (a.price_wei || 0));
+      }
+
+      function buildTable(headers, rows, className) {
+        const thead = headers.map(h => '<th>' + escapeHtml(h) + '</th>').join('');
+        const tbody = rows.map(row => '<tr>' + row.map(cell => '<td>' + (typeof cell === 'string' ? escapeHtml(cell) : cell) + '</td>').join('') + '</tr>').join('');
+        return '<table class="' + (className || 'listings-table') + '"><thead><tr>' + thead + '</tr></thead><tbody>' + tbody + '</tbody></table>';
+      }
+
+      function formatNumber(n) {
+        if (n == null || n === '') return '—';
+        const x = Number(n);
+        return isNaN(x) ? String(n) : x.toLocaleString();
+      }
+
+      function weiToEther(wei) {
+        if (wei == null) return null;
+        const w = parseInt(wei, 10);
+        return isNaN(w) ? null : w / 1e18;
+      }
+
+      function etherToWei(eth) {
+        if (eth == null) return null;
+        const e = parseFloat(eth);
+        return isNaN(e) ? null : Math.floor(e * 1e18);
+      }
+
+      function getDefaultLimitCreators() { return 20; }
+      function getDefaultLimitCollectibles() { return 20; }
+      function getDefaultListingDurationSeconds() { return 604800; }
+      function getDefaultOfferDurationSeconds() { return 259200; }
+
+      function safeParseInt(val, def) {
+        const n = parseInt(val, 10);
+        return isNaN(n) ? (def != null ? def : 0) : n;
+      }
+      function safeParseFloat(val, def) {
+        const n = parseFloat(val);
+        return isNaN(n) ? (def != null ? def : 0) : n;
+      }
+      function clamp(val, min, max) {
+        const n = Number(val);
+        if (isNaN(n)) return min;
+        if (n < min) return min;
+        if (n > max) return max;
+        return n;
+      }
+    })();
+  </script>
+</body>
+</html>
