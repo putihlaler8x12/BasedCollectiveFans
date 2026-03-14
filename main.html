@@ -558,3 +558,115 @@
         <span class="loading">Load creators…</span>
       </div>
       <div class="pagination" id="pagination-creators">
+        <button type="button" id="creators-prev">Previous</button>
+        <span id="creators-page-info">Page 1</span>
+        <button type="button" id="creators-next">Next</button>
+        <button type="button" class="btn btn-secondary" id="export-creators-csv">Export CSV</button>
+      </div>
+      <div id="creator-detail" class="detail-view anim-fade" style="display: none;"></div>
+    </div>
+
+    <div id="panel-collectibles" class="panel card">
+      <h2>Collectibles</h2>
+      <div class="filter-bar">
+        <input type="text" id="filter-collectibles" placeholder="Filter by creator ID or collectible ID…">
+        <select id="limit-collectibles">
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+      <div id="collectibles-content" class="collectible-grid">
+        <span class="loading">Load collectibles…</span>
+      </div>
+      <div class="pagination" id="pagination-collectibles">
+        <button type="button" id="collectibles-prev">Previous</button>
+        <span id="collectibles-page-info">Page 1</span>
+        <button type="button" id="collectibles-next">Next</button>
+        <button type="button" class="btn btn-secondary" id="export-collectibles-csv">Export CSV</button>
+      </div>
+      <div id="collectible-detail" class="detail-view anim-fade" style="display: none;"></div>
+    </div>
+
+    <div id="panel-listings" class="panel card">
+      <h2>Active listings</h2>
+      <div id="listings-content">
+        <span class="loading">Load listings…</span>
+      </div>
+    </div>
+
+    <div id="panel-offers" class="panel card">
+      <h2>Active offers</h2>
+      <div id="offers-content">
+        <span class="loading">Load offers…</span>
+      </div>
+    </div>
+
+    <div id="panel-actions" class="panel card">
+      <h2>Actions</h2>
+      <p class="message info">Set API base URL below, then use the Unite app or contract to register creators, mint, list, and follow. This page reads from the Unite API.</p>
+      <div class="form-row">
+        <label for="api-base">API base URL (e.g. http://127.0.0.1:8765)</label>
+        <input type="text" id="api-base" placeholder="http://127.0.0.1:8765">
+      </div>
+      <button type="button" class="btn btn-primary" id="btn-save-api">Save API URL</button>
+
+      <h3 style="margin-top: 2rem;">Register creator (POST)</h3>
+      <div class="form-row">
+        <label for="reg-account">Account (address)</label>
+        <input type="text" id="reg-account" placeholder="0x...">
+      </div>
+      <div class="form-row">
+        <label for="reg-handle">Handle</label>
+        <input type="text" id="reg-handle" placeholder="my_handle">
+      </div>
+      <button type="button" class="btn btn-secondary" id="btn-register-creator">Register creator</button>
+      <div id="reg-message"></div>
+
+      <h3 style="margin-top: 1.5rem;">Follow creator (POST)</h3>
+      <div class="form-row">
+        <label for="follow-creator-id">Creator ID</label>
+        <input type="text" id="follow-creator-id" placeholder="creator_1">
+      </div>
+      <div class="form-row">
+        <label for="follow-fan">Fan (address)</label>
+        <input type="text" id="follow-fan" placeholder="0x...">
+      </div>
+      <button type="button" class="btn btn-secondary" id="btn-follow">Follow</button>
+      <div id="follow-message"></div>
+
+      <h2 style="margin-top: 2.5rem;">About BasedCollectiveFans</h2>
+      <p style="color: var(--textMuted); margin-bottom: 1rem; max-width: 640px;">
+        BasedCollectiveFans is the web interface for the SiamsoProtocol fan collective: content creators register on-chain or via the Unite app,
+        mint collectibles, and fans can follow creators and trade collectibles via listings and offers. This page talks to the Unite API (run
+        <code>python Unite.py serve</code> with the Unite app) to display creators, collectibles, active listings, and offers. You can register
+        new creators and follow creators from the Actions panel. For full trading (create listing, place offer, fill, cancel) use the Unite CLI
+        or interact directly with the SiamsoProtocol contract on an EVM chain.
+      </p>
+      <h3 class="section-title">Quick start</h3>
+      <ul style="color: var(--textMuted); margin-left: 1.5rem; margin-bottom: 1rem;">
+        <li>Set the API base URL (e.g. <code>http://127.0.0.1:8765</code>) and click Save.</li>
+        <li>Start the Unite server: <code>python Unite.py serve --port 8765</code>.</li>
+        <li>Click Refresh to load stats, creators, collectibles, listings, and offers.</li>
+        <li>Click a creator card to see details; click a collectible card to see its details.</li>
+        <li>Use the Actions panel to register a creator (account + handle) or follow a creator (creator ID + fan address).</li>
+      </ul>
+      <h3 class="section-title">Links</h3>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">
+        SiamsoProtocol contract: content creators, collectibles, fan follows, listing/offer book with fees and optional royalties.
+        Unite app: single-file Python companion for local state and REST API. BasedCollectiveFans: this web UI.
+      </p>
+
+      <h2 style="margin-top: 2.5rem;">FAQ</h2>
+      <div class="detail-view mt-2">
+        <h3 class="section-title">Why do I see "Set API URL in Actions"?</h3>
+        <p style="color: var(--textMuted); font-size: 0.9rem;">The page reads data from the Unite API. Enter the base URL (e.g. http://127.0.0.1:8765) in the Actions panel and click Save API URL, then refresh.</p>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">How do I run the Unite API?</h3>
+        <p style="color: var(--textMuted); font-size: 0.9rem;">From the directory containing Unite.py run: <code>python Unite.py serve --port 8765</code>. Then open this page and set the API URL to http://127.0.0.1:8765 (or your host/port).</p>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">Can I create listings or place offers from this page?</h3>
+        <p style="color: var(--textMuted); font-size: 0.9rem;">This interface supports viewing creators, collectibles, listings, and offers, plus registering creators and following via the Actions panel. For creating listings, placing offers, filling, or cancelling, use the Unite CLI (e.g. <code>python Unite.py create-listing ...</code>) or interact with the SiamsoProtocol contract directly.</p>
+      </div>
