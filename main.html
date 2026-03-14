@@ -894,3 +894,115 @@
       }
 
       function showMessage(containerId, text, type) {
+        const c = el(containerId);
+        if (!c) return;
+        c.innerHTML = '<div class="message ' + (type || 'info') + '">' + escapeHtml(text) + '</div>';
+      }
+
+      function escapeHtml(s) {
+        const d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      function renderCreators(data) {
+        if (!data || !data.creators || !data.creators.length) {
+          creatorsContent.innerHTML = '<div class="empty">No creators yet.</div>';
+          return;
+        }
+        creatorsContent.innerHTML = data.creators.map(c => `
+          <div class="creator-card" data-creator-id="${escapeHtml(c.creator_id)}">
+            <div class="handle">${escapeHtml(c.handle)}</div>
+            <div class="account">${escapeHtml(c.account)}</div>
+            <div class="meta">Followers: ${c.follower_count || 0} · ${c.active ? 'Active' : 'Inactive'}</div>
+            <button type="button" class="follow-btn" data-creator-id="${escapeHtml(c.creator_id)}">Follow</button>
+          </div>
+        `).join('');
+        creatorsContent.querySelectorAll('.follow-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = btn.getAttribute('data-creator-id');
+            el('follow-creator-id').value = id;
+            document.querySelector('[data-tab="actions"]').click();
+          });
+        });
+        creatorsContent.querySelectorAll('.creator-card').forEach(card => {
+          card.addEventListener('click', (e) => {
+            if (e.target.classList.contains('follow-btn')) return;
+            const id = card.getAttribute('data-creator-id');
+            if (id) showCreatorDetail(id);
+          });
+        });
+      }
+
+      function renderCollectibles(data) {
+        if (!data || !data.collectibles || !data.collectibles.length) {
+          collectiblesContent.innerHTML = '<div class="empty">No collectibles yet.</div>';
+          return;
+        }
+        collectiblesContent.innerHTML = data.collectibles.map(c => `
+          <div class="collectible-card" data-collectible-id="${escapeHtml(c.collectible_id)}">
+            <div class="col-id">${escapeHtml(c.collectible_id)}</div>
+            <div class="supply">${c.total_minted} / ${c.supply_cap} minted</div>
+            <div class="creator-link">Creator: ${escapeHtml(c.creator_id)}</div>
+          </div>
+        `).join('');
+        collectiblesContent.querySelectorAll('.collectible-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const id = card.getAttribute('data-collectible-id');
+            if (id) showCollectibleDetail(id);
+          });
+        });
+      }
+
+      function renderListings(data) {
+        if (!data || !data.listings || !data.listings.length) {
+          listingsContent.innerHTML = '<div class="empty">No active listings.</div>';
+          return;
+        }
+        listingsContent.innerHTML = `
+          <table class="listings-table">
+            <thead>
+              <tr>
+                <th>Listing ID</th>
+                <th>Collectible</th>
+                <th>Seller</th>
+                <th>Amount</th>
+                <th>Price</th>
+                <th>Expires</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.listings.map(l => `
+                <tr>
+                  <td class="mono">${escapeHtml(l.listing_id)}</td>
+                  <td class="mono">${escapeHtml(l.collectible_id)}</td>
+                  <td class="addr">${escapeHtml(l.seller)}</td>
+                  <td>${l.amount}</td>
+                  <td>${formatWei(l.price_wei)}</td>
+                  <td>${formatDate(l.expires_at)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+
+      function renderOffers(data) {
+        if (!data || !data.offers || !data.offers.length) {
+          offersContent.innerHTML = '<div class="empty">No active offers.</div>';
+          return;
+        }
+        offersContent.innerHTML = `
+          <table class="offers-table">
+            <thead>
+              <tr>
+                <th>Offer ID</th>
+                <th>Collectible</th>
+                <th>Bidder</th>
+                <th>Amount</th>
+                <th>Price</th>
+                <th>Expires</th>
+              </tr>
+            </thead>
+            <tbody>
