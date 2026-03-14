@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BasedCollectiveFans – Creator collectibles &amp; fan exchange</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0b0f;
+      --bg2: #131118;
+      --surface: #1a1720;
+      --surface2: #221e28;
+      --border: #2d2835;
+      --text: #f0eef4;
+      --textMuted: #9a92a8;
+      --accent: #c77dff;
+      --accentDim: #9d4edd;
+      --accentHover: #e0aaff;
+      --green: #80ffdb;
+      --amber: #ffd166;
+      --rose: #f72585;
+      --radius: 12px;
+      --radiusSm: 8px;
+      --font: 'Outfit', system-ui, sans-serif;
+      --fontMono: 'Space Mono', monospace;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--accentHover); }
+    code, .mono { font-family: var(--fontMono); font-size: 0.88em; }
+
+    .site-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .site-header h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .site-header h1 span { color: var(--accent); }
+    .site-header nav {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .site-header nav a,
+    .site-header nav button {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radiusSm);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .site-header nav a:hover,
+    .site-header nav button:hover {
+      background: var(--border);
+      border-color: var(--accentDim);
+    }
+    .site-header .api-url {
+      font-family: var(--fontMono);
+      font-size: 0.8rem;
+      color: var(--textMuted);
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+    .hero {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: linear-gradient(180deg, var(--surface) 0%, transparent 100%);
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+    }
+    .hero h2 {
+      font-size: 1.75rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .hero p {
+      color: var(--textMuted);
+      font-size: 1rem;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .card {
