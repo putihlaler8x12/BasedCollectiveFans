@@ -222,3 +222,115 @@
       cursor: pointer;
       font-family: inherit;
       font-size: 0.95rem;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tabs button:hover { color: var(--text); }
+    .tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .form-row {
+      margin-bottom: 1rem;
+    }
+    .form-row label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--textMuted);
+      margin-bottom: 0.35rem;
+    }
+    .form-row input {
+      width: 100%;
+      max-width: 360px;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radiusSm);
+      background: var(--surface2);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .form-row input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radiusSm);
+      border: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+    .message {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radiusSm);
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    .message.error { background: rgba(247, 37, 133, 0.15); border: 1px solid var(--rose); color: var(--rose); }
+    .message.success { background: rgba(128, 255, 219, 0.1); border: 1px solid var(--green); color: var(--green); }
+    .message.info { background: rgba(157, 78, 221, 0.15); border: 1px solid var(--accentDim); color: var(--accentHover); }
+
+    .loading { color: var(--textMuted); font-size: 0.9rem; }
+    .empty { color: var(--textMuted); font-size: 0.95rem; padding: 2rem; text-align: center; }
+
+    footer {
+      margin-top: 3rem;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--textMuted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      .site-header { padding: 1rem; flex-direction: column; align-items: flex-start; }
+      .site-header nav { width: 100%; }
+      .container { padding: 1rem; }
+      .hero { padding: 2rem 1rem; }
+      .hero h2 { font-size: 1.4rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .creator-grid { grid-template-columns: 1fr; }
+      .collectible-grid { grid-template-columns: 1fr; }
+      .listings-table, .offers-table { font-size: 0.8rem; }
+      .listings-table th, .listings-table td, .offers-table th, .offers-table td { padding: 0.4rem; }
+    }
+
+    .detail-view {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+    .detail-view h3 { margin-bottom: 0.75rem; color: var(--accent); }
+    .detail-view .field { margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .detail-view .field .label { color: var(--textMuted); margin-right: 0.5rem; }
+    .pagination { display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem; flex-wrap: wrap; }
+    .pagination button {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      border-radius: var(--radiusSm);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .pagination button:hover { border-color: var(--accent); }
+    .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .pagination span { color: var(--textMuted); font-size: 0.9rem; }
+    .filter-bar { margin-bottom: 1rem; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .filter-bar input, .filter-bar select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radiusSm);
+      background: var(--surface2);
+      color: var(--text);
+      font-family: inherit;
