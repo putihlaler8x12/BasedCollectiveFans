@@ -782,3 +782,115 @@
       <h2 style="margin-top: 2.5rem;">Step-by-step: Connect Unite and view data</h2>
       <ol style="color: var(--textMuted); margin-left: 1.5rem; line-height: 1.9;">
         <li>Install Python 3 if needed. Download or clone the project that contains <code>Unite.py</code>.</li>
+        <li>Open a terminal in that directory and run: <code>python Unite.py serve --port 8765</code>. You should see "Serving Unite API at http://127.0.0.1:8765".</li>
+        <li>Open this HTML file (BasedCollectiveFans) in a browser. Go to the Actions tab.</li>
+        <li>In "API base URL", enter <code>http://127.0.0.1:8765</code> (or <code>http://localhost:8765</code>) and click "Save API URL".</li>
+        <li>Click "Refresh" in the header (or switch tabs). The stats should update and creators/collectibles/listings/offers will load if any exist.</li>
+        <li>To add test data: in Actions, fill "Account" and "Handle" and click "Register creator". Then refresh. Optionally use "Mint collectible" or the Unite CLI to mint, then create listings or offers via CLI.</li>
+      </ol>
+
+      <h2 style="margin-top: 2.5rem;">Troubleshooting</h2>
+      <div class="detail-view mt-2">
+        <h3 class="section-title">CORS errors in browser console</h3>
+        <p style="color: var(--textMuted); font-size: 0.9rem;">If the Unite server runs on a different origin than the file:// or site hosting this page, the browser may block requests. Run Unite with <code>--host 0.0.0.0</code> if needed and ensure the API URL matches the address you use to open this page. For local file opening, use the same host (e.g. 127.0.0.1) in the API URL.</p>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">"Failed to load creators" or empty lists</h3>
+        <p style="color: var(--textMuted); font-size: 0.9rem;">Confirm the API base URL is correct and the Unite server is running. Open the API URL in a new tab (e.g. http://127.0.0.1:8765/api/creators) and check that JSON is returned. If the server was just started, the state may be empty until you register a creator via Actions or the CLI.</p>
+      </div>
+      <div class="detail-view mt-1">
+        <h3 class="section-title">Export CSV is empty</h3>
+        <p style="color: var(--textMuted); font-size: 0.9rem;">Export uses the current in-memory cache (creators or collectibles loaded in the active tab). Switch to the Creators or Collectibles tab, click Refresh, then click Export CSV. If no data was loaded, the CSV will have only headers or one row.</p>
+      </div>
+
+      <h2 style="margin-top: 2.5rem;">Browser support</h2>
+      <p style="color: var(--textMuted); margin-bottom: 0.75rem;">This page uses standard ES5+ JavaScript, fetch, and localStorage. Supported in modern Chrome, Firefox, Safari, and Edge. Query parameters and API URL are stored in localStorage for the current origin.</p>
+
+      <h2 style="margin-top: 2.5rem;">Credits</h2>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">BasedCollectiveFans is the web interface for the SiamsoProtocol fan collective. SiamsoProtocol is an EVM contract for content creators and collectible exchange. Unite is the companion Python app providing local state and REST API. This UI is a single-file HTML/CSS/JS application that reads from the Unite API and supports creator registration, follow, and optional mint via POST.</p>
+
+      <h2 style="margin-top: 2.5rem;">Keyboard and accessibility</h2>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">Use the tab key to move between links and buttons. Enter or Space activates buttons. The API URL and query parameters are stored in localStorage. For screen readers, each section has a heading; tables include proper headers. If the API is unreachable, the status indicator in the header shows offline and stats display "?".</p>
+
+      <h2 style="margin-top: 2.5rem;">Feature summary</h2>
+      <ul style="color: var(--textMuted); margin-left: 1.5rem; line-height: 1.8;">
+        <li>View protocol stats: creators, collectibles, listings, offers, fan follows.</li>
+        <li>Browse creators with filter and pagination; click a creator for details.</li>
+        <li>Browse collectibles with filter and pagination; click a collectible for details.</li>
+        <li>View active listings and offers in tables with price and expiry.</li>
+        <li>Register a new creator (POST) and follow a creator (POST) from the Actions panel.</li>
+        <li>Optional: mint a collectible via POST if the Unite API supports it.</li>
+        <li>Export creators or collectibles to CSV from the current cache.</li>
+        <li>Set API base URL via input or query parameter <code>?api=...</code>; open a tab via <code>?tab=...</code>.</li>
+      </ul>
+
+      <h2 style="margin-top: 2.5rem;">Contract addresses (deploy-specific)</h2>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">SiamsoProtocol uses four immutable addresses set in the constructor: curator, steward, guardian, and fee recipient. They are EIP-55 checksummed and set at deploy time. This web UI does not display or require contract addresses; it talks only to the Unite API. To interact with the live contract, use a wallet or script with the deployed SiamsoProtocol address on your chain.</p>
+
+      <h2 style="margin-top: 2.5rem;">Version and file info</h2>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">BasedCollectiveFans is a single-file static web app. No build step is required; open <code>index.html</code> in a browser. The Unite API (Python) must be running separately for data. SiamsoProtocol is a Solidity contract deployable to any EVM chain; this UI does not connect to the chain directly.</p>
+
+      <h2 style="margin-top: 2.5rem;">Privacy and data</h2>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">This page stores only the API base URL (and optional query params) in your browser's localStorage. No creator, collectible, or wallet data is stored by the page. All data displayed is fetched from the Unite API you configure. If you use a remote Unite server, its operator could log requests. For production, deploy Unite and this UI on infrastructure you control or trust.</p>
+
+      <h2 style="margin-top: 2.5rem;">License and disclaimer</h2>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">BasedCollectiveFans, Unite, and SiamsoProtocol are provided as-is. Use at your own risk. On-chain interactions involve value; verify contract code and parameters before deploying or transacting. This documentation is for the fan collective and developer reference only.</p>
+
+      <h2 style="margin-top: 2.5rem;">Summary</h2>
+      <p style="color: var(--textMuted); font-size: 0.9rem;">Set your Unite API URL, click Refresh, and browse creators and collectibles. Use Actions to register or follow. Export to CSV from the Creators or Collectibles tab. For trading (listings and offers), use the Unite CLI or the SiamsoProtocol contract directly.</p>
+    </div>
+  </main>
+
+  <footer>
+    BasedCollectiveFans – Fan collective for SiamsoProtocol collectibles. Data from Unite API.
+  </footer>
+
+  <script>
+    (function () {
+      const STORAGE_API = 'basedcollectivefans_api_base';
+      let apiBase = localStorage.getItem(STORAGE_API) || '';
+
+      const el = (id) => document.getElementById(id);
+      const apiUrlDisplay = el('api-url-display');
+      const apiBaseInput = el('api-base');
+      const statsGrid = el('stats-grid');
+      const statCreators = el('stat-creators');
+      const statCollectibles = el('stat-collectibles');
+      const statListings = el('stat-listings');
+      const statOffers = el('stat-offers');
+      const statFollows = el('stat-follows');
+      const creatorsContent = el('creators-content');
+      const collectiblesContent = el('collectibles-content');
+      const listingsContent = el('listings-content');
+      const offersContent = el('offers-content');
+
+      function setApiBase(url) {
+        url = (url || '').trim().replace(/\/+$/, '');
+        apiBase = url;
+        localStorage.setItem(STORAGE_API, apiBase);
+        apiBaseInput.value = apiBase;
+        apiUrlDisplay.textContent = apiBase ? 'API: ' + apiBase : 'API: —';
+      }
+
+      function getApi(path) {
+        if (!apiBase) return Promise.reject(new Error('No API base URL'));
+        return fetch(apiBase + path).then(r => {
+          if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+          return r.json();
+        });
+      }
+
+      function postApi(path, body) {
+        if (!apiBase) return Promise.reject(new Error('No API base URL'));
+        return fetch(apiBase + path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        }).then(r => {
+          const ct = r.headers.get('Content-Type') || '';
+          if (ct.includes('application/json')) return r.json();
+          return r.text();
+        });
+      }
+
+      function showMessage(containerId, text, type) {
