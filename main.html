@@ -446,3 +446,115 @@
 
     .hover\:border-accent:hover { border-color: var(--accentDim); }
     .focus\:ring:focus { box-shadow: 0 0 0 2px var(--accentDim); }
+    .disabled\:opacity-50:disabled { opacity: 0.5; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .not-sr-only { position: static; width: auto; height: auto; padding: 0; margin: 0; overflow: visible; clip: auto; white-space: normal; }
+    .overflow-auto { overflow: auto; }
+    .overflow-hidden { overflow: hidden; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .top-0 { top: 0; }
+    .right-0 { right: 0; }
+    .bottom-0 { bottom: 0; }
+    .left-0 { left: 0; }
+    .z-10 { z-index: 10; }
+    .z-20 { z-index: 20; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .w-8 { width: 2rem; }
+    .h-8 { height: 2rem; }
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .uppercase { text-transform: uppercase; }
+    .lowercase { text-transform: lowercase; }
+    .capitalize { text-transform: capitalize; }
+    .tracking-wide { letter-spacing: 0.025em; }
+    .tracking-wider { letter-spacing: 0.05em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-relaxed { line-height: 1.625; }
+    .whitespace-nowrap { white-space: nowrap; }
+    .whitespace-pre { white-space: pre; }
+    .object-contain { object-fit: contain; }
+    .object-cover { object-fit: cover; }
+    .resize-none { resize: none; }
+    .resize-y { resize: vertical; }
+    .resize-x { resize: horizontal; }
+    .cursor-default { cursor: default; }
+    .cursor-pointer { cursor: pointer; }
+    .cursor-not-allowed { cursor: not-allowed; }
+    .select-none { user-select: none; }
+    .select-text { user-select: text; }
+    .select-all { user-select: all; }
+    .appearance-none { appearance: none; }
+    .outline-none { outline: none; }
+    .ring { box-shadow: 0 0 0 2px var(--accentDim); }
+    .ring-offset { margin: 2px; }
+    .flex-1 { flex: 1 1 0%; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .grid { display: grid; }
+    .col-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .col-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .gap-3 { gap: 1.5rem; }
+    .gap-4 { gap: 2rem; }
+    .basis-0 { flex-basis: 0; }
+    .grow { flex-grow: 1; }
+    .shrink { flex-shrink: 1; }
+    .basis-full { flex-basis: 100%; }
+    .min-w-0 { min-width: 0; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <h1>Based<span>Collective</span>Fans</h1>
+    <nav>
+      <a href="#" data-tab="creators">Creators</a>
+      <a href="#" data-tab="collectibles">Collectibles</a>
+      <a href="#" data-tab="listings">Listings</a>
+      <a href="#" data-tab="offers">Offers</a>
+      <a href="#" data-tab="actions">Actions</a>
+      <button type="button" id="btn-refresh">Refresh</button>
+    </nav>
+    <div class="api-status">
+      <span id="api-status-indicator" class="status-dot unknown" title="API status"></span>
+    </div>
+    <div class="api-url" id="api-url-display">API: —</div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h2>Content creators &amp; collectible fan exchange</h2>
+      <p>Discover creators, collectibles, and trade with the collective. Powered by SiamsoProtocol and Unite.</p>
+    </section>
+
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-box"><div class="value" id="stat-creators">—</div><div class="label">Creators</div></div>
+      <div class="stat-box"><div class="value" id="stat-collectibles">—</div><div class="label">Collectibles</div></div>
+      <div class="stat-box"><div class="value" id="stat-listings">—</div><div class="label">Listings</div></div>
+      <div class="stat-box"><div class="value" id="stat-offers">—</div><div class="label">Offers</div></div>
+      <div class="stat-box"><div class="value" id="stat-follows">—</div><div class="label">Fan follows</div></div>
+    </div>
+
+    <div class="tabs">
+      <button type="button" data-tab="creators" class="active">Creators</button>
+      <button type="button" data-tab="collectibles">Collectibles</button>
+      <button type="button" data-tab="listings">Listings</button>
+      <button type="button" data-tab="offers">Offers</button>
+      <button type="button" data-tab="actions">Actions</button>
+    </div>
+
+    <div id="panel-creators" class="panel active card">
+      <h2>Creators</h2>
+      <div class="filter-bar">
+        <input type="text" id="filter-creators" placeholder="Filter by handle or account…">
+        <span class="section-title">Limit</span>
+        <select id="limit-creators">
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div id="creators-content" class="creator-grid">
+        <span class="loading">Load creators…</span>
+      </div>
+      <div class="pagination" id="pagination-creators">
