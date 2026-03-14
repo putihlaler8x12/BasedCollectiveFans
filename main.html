@@ -1006,3 +1006,115 @@
               </tr>
             </thead>
             <tbody>
+              ${data.offers.map(o => `
+                <tr>
+                  <td class="mono">${escapeHtml(o.offer_id)}</td>
+                  <td class="mono">${escapeHtml(o.collectible_id)}</td>
+                  <td class="addr">${escapeHtml(o.bidder)}</td>
+                  <td>${o.amount}</td>
+                  <td>${formatWei(o.price_wei)}</td>
+                  <td>${formatDate(o.expires_at)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+
+      function loadStats() {
+        if (!apiBase) {
+          statCreators.textContent = '—';
+          statCollectibles.textContent = '—';
+          statListings.textContent = '—';
+          statOffers.textContent = '—';
+          statFollows.textContent = '—';
+          return;
+        }
+        getApi('/api/stats').then(data => {
+          statCreators.textContent = data.creators != null ? data.creators : '—';
+          statCollectibles.textContent = data.collectibles != null ? data.collectibles : '—';
+          statListings.textContent = data.listings != null ? data.listings : '—';
+          statOffers.textContent = data.offers != null ? data.offers : '—';
+          statFollows.textContent = data.fan_follows != null ? data.fan_follows : '—';
+        }).catch(() => {
+          statCreators.textContent = '?';
+          statCollectibles.textContent = '?';
+          statListings.textContent = '?';
+          statOffers.textContent = '?';
+          statFollows.textContent = '?';
+        });
+      }
+
+      let creatorsPage = 0;
+      let creatorsLimit = 20;
+      let creatorsOffset = 0;
+      let creatorsTotal = 0;
+      let collectiblesPage = 0;
+      let collectiblesLimit = 20;
+      let collectiblesOffset = 0;
+      let collectiblesTotal = 0;
+      let allCreatorsCache = [];
+      let allCollectiblesCache = [];
+
+      function loadCreators() {
+        if (!apiBase) { creatorsContent.innerHTML = '<div class="empty">Set API URL in Actions.</div>'; return; }
+        const offset = creatorsPage * creatorsLimit;
+        getApi('/api/creators?offset=' + offset + '&limit=' + creatorsLimit).then(data => {
+          allCreatorsCache = data.creators || [];
+          creatorsTotal = data.count != null ? data.count : allCreatorsCache.length;
+          let list = allCreatorsCache;
+          const filterVal = (el('filter-creators') || {}).value || '';
+          if (filterVal) {
+            const f = filterVal.toLowerCase();
+            list = list.filter(c => (c.handle && c.handle.toLowerCase().indexOf(f) >= 0) || (c.account && c.account.toLowerCase().indexOf(f) >= 0));
+          }
+          renderCreators({ creators: list });
+          el('creators-page-info').textContent = 'Page ' + (creatorsPage + 1) + (creatorsTotal ? ' (total ' + creatorsTotal + ')' : '');
+          el('creators-prev').disabled = creatorsPage <= 0;
+          el('creators-next').disabled = list.length < creatorsLimit && creatorsPage >= 1;
+        }).catch(() => {
+          creatorsContent.innerHTML = '<div class="message error">Failed to load creators.</div>';
+        });
+      }
+
+      function loadCollectibles() {
+        if (!apiBase) { collectiblesContent.innerHTML = '<div class="empty">Set API URL in Actions.</div>'; return; }
+        const offset = collectiblesPage * collectiblesLimit;
+        getApi('/api/collectibles?offset=' + offset + '&limit=' + collectiblesLimit).then(data => {
+          allCollectiblesCache = data.collectibles || [];
+          collectiblesTotal = data.count != null ? data.count : allCollectiblesCache.length;
+          let list = allCollectiblesCache;
+          const filterVal = (el('filter-collectibles') || {}).value || '';
+          if (filterVal) {
+            const f = filterVal.toLowerCase();
+            list = list.filter(c => (c.collectible_id && c.collectible_id.toLowerCase().indexOf(f) >= 0) || (c.creator_id && c.creator_id.toLowerCase().indexOf(f) >= 0));
+          }
+          renderCollectibles({ collectibles: list });
+          el('collectibles-page-info').textContent = 'Page ' + (collectiblesPage + 1) + (collectiblesTotal ? ' (total ' + collectiblesTotal + ')' : '');
+          el('collectibles-prev').disabled = collectiblesPage <= 0;
+          el('collectibles-next').disabled = list.length < collectiblesLimit && collectiblesPage >= 1;
+        }).catch(() => {
+          collectiblesContent.innerHTML = '<div class="message error">Failed to load collectibles.</div>';
+        });
+      }
+
+      function showCreatorDetail(creatorId) {
+        const detailEl = el('creator-detail');
+        if (!detailEl || !apiBase) return;
+        detailEl.style.display = 'block';
+        detailEl.innerHTML = '<span class="loading">Loading…</span>';
+        getApi('/api/creator/' + encodeURIComponent(creatorId)).then(c => {
+          detailEl.innerHTML = `
+            <div class="creator-detail-section">
+              <h3>${escapeHtml(c.handle || creatorId)}</h3>
+              <div class="field"><span class="label">Creator ID</span> ${escapeHtml(c.creator_id || creatorId)}</div>
+              <div class="field"><span class="label">Account</span> <span class="addr">${escapeHtml(c.account || '')}</span></div>
+              <div class="field"><span class="label">Active</span> ${c.active ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-rose">Inactive</span>'}</div>
+              <div class="field"><span class="label">Followers</span> ${c.follower_count != null ? c.follower_count : '—'}</div>
+              <div class="field"><span class="label">Registered</span> ${c.registered_at ? new Date(c.registered_at * 1000).toLocaleString() : '—'}</div>
+              <div class="field"><span class="label">Updated</span> ${c.updated_at ? new Date(c.updated_at * 1000).toLocaleString() : '—'}</div>
+            </div>
+          `;
+        }).catch(() => {
+          detailEl.innerHTML = '<div class="message error">Could not load creator details.</div>';
+        });
