@@ -1118,3 +1118,115 @@
         }).catch(() => {
           detailEl.innerHTML = '<div class="message error">Could not load creator details.</div>';
         });
+      }
+
+      function showCollectibleDetail(collectibleId) {
+        const detailEl = el('collectible-detail');
+        if (!detailEl || !apiBase) return;
+        detailEl.style.display = 'block';
+        detailEl.innerHTML = '<span class="loading">Loading…</span>';
+        getApi('/api/collectible/' + encodeURIComponent(collectibleId)).then(c => {
+          detailEl.innerHTML = `
+            <div class="collectible-detail-section">
+              <h3>${escapeHtml(c.collectible_id || collectibleId)}</h3>
+              <div class="field"><span class="label">Creator ID</span> ${escapeHtml(c.creator_id || '')}</div>
+              <div class="field"><span class="label">Supply</span> ${c.total_minted != null ? c.total_minted : '—'} / ${c.supply_cap != null ? c.supply_cap : '—'}</div>
+              <div class="field"><span class="label">Frozen</span> ${c.frozen ? '<span class="badge badge-rose">Yes</span>' : '<span class="badge badge-green">No</span>'}</div>
+              <div class="field"><span class="label">Content hash</span> <code>${escapeHtml((c.content_hash || '').slice(0, 24))}…</code></div>
+              <div class="field"><span class="label">Royalty</span> ${c.royalty_bps != null ? c.royalty_bps + ' bps' : '—'} ${c.royalty_recipient ? '→ ' + escapeHtml(c.royalty_recipient.slice(0, 10)) + '…' : ''}</div>
+            </div>
+          `;
+        }).catch(() => {
+          detailEl.innerHTML = '<div class="message error">Could not load collectible details.</div>';
+        });
+      }
+
+      function loadListings() {
+        if (!apiBase) { listingsContent.innerHTML = '<div class="empty">Set API URL in Actions.</div>'; return; }
+        getApi('/api/listings').then(renderListings).catch(() => {
+          listingsContent.innerHTML = '<div class="message error">Failed to load listings.</div>';
+        });
+      }
+
+      function loadOffers() {
+        if (!apiBase) { offersContent.innerHTML = '<div class="empty">Set API URL in Actions.</div>'; return; }
+        getApi('/api/offers').then(renderOffers).catch(() => {
+          offersContent.innerHTML = '<div class="message error">Failed to load offers.</div>';
+        });
+      }
+
+      function refreshAll() {
+        loadStats();
+        loadCreators();
+        loadCollectibles();
+        loadListings();
+        loadOffers();
+      }
+
+      function switchTab(tabId) {
+        document.querySelectorAll('.tabs button').forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-tab') === tabId);
+        });
+        document.querySelectorAll('.panel').forEach(p => {
+          p.classList.toggle('active', p.id === 'panel-' + tabId);
+        });
+      }
+
+      document.querySelectorAll('.tabs button, [data-tab]').forEach(node => {
+        const tab = node.getAttribute('data-tab');
+        if (!tab) return;
+        node.addEventListener('click', () => switchTab(tab));
+      });
+
+      el('btn-refresh').addEventListener('click', refreshAll);
+
+      if (el('creators-prev')) el('creators-prev').addEventListener('click', () => { creatorsPage = Math.max(0, creatorsPage - 1); loadCreators(); });
+      if (el('creators-next')) el('creators-next').addEventListener('click', () => { creatorsPage++; loadCreators(); });
+      if (el('collectibles-prev')) el('collectibles-prev').addEventListener('click', () => { collectiblesPage = Math.max(0, collectiblesPage - 1); loadCollectibles(); });
+      if (el('collectibles-next')) el('collectibles-next').addEventListener('click', () => { collectiblesPage++; loadCollectibles(); });
+      if (el('limit-creators')) el('limit-creators').addEventListener('change', () => { creatorsLimit = parseInt(el('limit-creators').value, 10) || 20; creatorsPage = 0; loadCreators(); });
+      if (el('limit-collectibles')) el('limit-collectibles').addEventListener('change', () => { collectiblesLimit = parseInt(el('limit-collectibles').value, 10) || 20; collectiblesPage = 0; loadCollectibles(); });
+      if (el('filter-creators')) el('filter-creators').addEventListener('input', () => { creatorsPage = 0; loadCreators(); });
+      if (el('filter-collectibles')) el('filter-collectibles').addEventListener('input', () => { collectiblesPage = 0; loadCollectibles(); });
+      if (el('export-creators-csv')) el('export-creators-csv').addEventListener('click', exportCreatorsCsv);
+      if (el('export-collectibles-csv')) el('export-collectibles-csv').addEventListener('click', exportCollectiblesCsv);
+
+      el('btn-save-api').addEventListener('click', () => {
+        setApiBase(apiBaseInput.value);
+        showMessage('reg-message', 'API URL saved.', 'success');
+      });
+
+      el('btn-register-creator').addEventListener('click', () => {
+        const account = el('reg-account').value.trim();
+        const handle = el('reg-handle').value.trim();
+        if (!account || !handle) {
+          showMessage('reg-message', 'Account and handle required.', 'error');
+          return;
+        }
+        postApi('/api/register-creator', { account, handle })
+          .then(data => {
+            showMessage('reg-message', 'Registered: ' + (data.creator_id || data), 'success');
+            refreshAll();
+          })
+          .catch(err => showMessage('reg-message', 'Error: ' + err.message, 'error'));
+      });
+
+      el('btn-follow').addEventListener('click', () => {
+        const creatorId = el('follow-creator-id').value.trim();
+        const fan = el('follow-fan').value.trim();
+        if (!creatorId || !fan) {
+          showMessage('follow-message', 'Creator ID and fan required.', 'error');
+          return;
+        }
+        postApi('/api/follow', { creator_id: creatorId, fan })
+          .then(() => {
+            showMessage('follow-message', 'Followed.', 'success');
+            refreshAll();
+          })
+          .catch(err => showMessage('follow-message', 'Error: ' + err.message, 'error'));
+      });
+
+      if (el('btn-mint')) {
+        el('btn-mint').addEventListener('click', () => {
+          const creatorId = el('mint-creator-id').value.trim();
+          const account = el('mint-account').value.trim();
