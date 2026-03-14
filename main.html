@@ -1230,3 +1230,115 @@
         el('btn-mint').addEventListener('click', () => {
           const creatorId = el('mint-creator-id').value.trim();
           const account = el('mint-account').value.trim();
+          const to = el('mint-to').value.trim();
+          const supplyCap = parseInt(el('mint-supply-cap').value, 10) || 1;
+          if (!creatorId || !account || !to) {
+            showMessage('mint-message', 'Creator ID, account, and mint-to required.', 'error');
+            return;
+          }
+          postApi('/api/mint', { creator_id: creatorId, account, to, supply_cap: supplyCap })
+            .then(data => {
+              showMessage('mint-message', 'Minted: ' + (data.collectible_id || JSON.stringify(data)), 'success');
+              refreshAll();
+            })
+            .catch(err => showMessage('mint-message', 'Error: ' + err.message, 'error'));
+        });
+      }
+
+      apiBaseInput.value = apiBase;
+      setApiBase(apiBase);
+      loadStats();
+      loadCreators();
+      loadCollectibles();
+      loadListings();
+      loadOffers();
+      setTimeout(updateApiStatusIndicator, 500);
+
+      function formatWei(w) {
+        if (w == null || w === '') return '—';
+        const n = parseInt(w, 10);
+        if (isNaN(n)) return String(w);
+        if (n >= 1e18) return (n / 1e18).toFixed(4) + ' ETH';
+        if (n >= 1e15) return (n / 1e18).toFixed(6) + ' ETH';
+        return n + ' wei';
+      }
+
+      function formatDate(ts) {
+        if (ts == null) return '—';
+        const d = new Date(typeof ts === 'number' ? ts * 1000 : ts);
+        return isNaN(d.getTime()) ? '—' : d.toLocaleString();
+      }
+
+      function shortenAddress(addr, chars) {
+        if (!addr || addr.length < (chars || 10)) return addr;
+        return addr.slice(0, 6) + '…' + addr.slice(-4);
+      }
+
+      function copyToClipboard(text) {
+        if (!navigator.clipboard) return false;
+        return navigator.clipboard.writeText(text).then(() => true).catch(() => false);
+      }
+
+      function addCopyButton(container, text, label) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-secondary';
+        btn.textContent = label || 'Copy';
+        btn.style.marginLeft = '0.5rem';
+        btn.addEventListener('click', () => copyToClipboard(text));
+        container.appendChild(btn);
+      }
+
+      function debounce(fn, ms) {
+        let t;
+        return function () {
+          clearTimeout(t);
+          t = setTimeout(() => fn.apply(this, arguments), ms);
+        };
+      }
+
+      function retryFetch(fn, maxAttempts) {
+        let attempts = 0;
+        function run() {
+          return fn().catch(err => {
+            attempts++;
+            if (attempts >= (maxAttempts || 3)) return Promise.reject(err);
+            return new Promise(r => setTimeout(r, 1000)).then(run);
+          });
+        }
+        return run();
+      }
+
+      function getApiWithRetry(path) {
+        return retryFetch(() => getApi(path), 2);
+      }
+
+      function isApiReachable() {
+        if (!apiBase) return Promise.resolve(false);
+        return fetch(apiBase + '/api/stats', { method: 'GET' }).then(r => r.ok).catch(() => false);
+      }
+
+      function parseQueryString() {
+        const q = window.location.search.slice(1);
+        const out = {};
+        q.split('&').forEach(pair => {
+          const [k, v] = pair.split('=');
+          if (k && v != null) out[decodeURIComponent(k)] = decodeURIComponent(v);
+        });
+        return out;
+      }
+
+      function applyQueryParams() {
+        const q = parseQueryString();
+        if (q.api) setApiBase(q.api);
+        if (q.tab && document.querySelector('[data-tab="' + q.tab + '"]')) switchTab(q.tab);
+      }
+
+      applyQueryParams();
+
+      function exportCreatorsCsv() {
+        if (!allCreatorsCache.length) return;
+        const headers = ['creator_id', 'handle', 'account', 'active', 'follower_count'];
+        const rows = allCreatorsCache.map(c => [c.creator_id, c.handle || '', c.account || '', c.active ? '1' : '0', (c.follower_count != null ? c.follower_count : '')].map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
